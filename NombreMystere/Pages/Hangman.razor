@@ -1,0 +1,99 @@
+﻿@page "/hangman"
+
+<h3>Jeu du Pendu</h3>
+
+@if (!gameOver)
+{
+    <div>
+        <p>
+            Mot à deviner:
+            @foreach (var letter in currentWordMasked)
+            {
+                <span class="letter">@letter </span>
+            }
+        </p>
+        <p>Essais restants : <span class="badge bg-secondary">@remainingAttempts</span></p>
+        <p>
+            @foreach (var letter in alphabet)
+            {
+                <button @onclick="() => GuessLetter(letter)" class="btn btn-secondary m-1" disabled="@guessedLetters.Contains(letter)">
+                    @letter
+                </button>
+            }
+        </p>
+    </div>
+}
+else
+{
+    if (hasWon)
+    {
+        <p class="text-success">Félicitations! Vous avez gagné! 😁</p>
+    }
+    else
+    {
+        <p class="text-danger">Vous avez perdu! 😒 Le mot était "@currentWord".</p>
+    }
+    <button class="btn btn-primary" @onclick="StartGame">Recommencer</button>
+}
+
+@code {
+    private string currentWord = string.Empty;
+    private char[] currentWordMasked = Array.Empty<char>();
+    private List<char> guessedLetters = new List<char>();
+    private string[] wordList = { "exemple", "blazor", "pendu", "ordinateur", "programmation" };
+    private bool gameOver = false;
+    private readonly char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+    private int remainingAttempts = 10;
+    private bool hasWon = false;
+
+    protected override void OnInitialized()
+    {
+        StartGame();
+    }
+
+    private void StartGame()
+    {
+        var random = new Random();
+        currentWord = wordList[random.Next(wordList.Length)].ToUpper();
+        currentWordMasked = new string('_', currentWord.Length).ToCharArray();
+        guessedLetters.Clear();
+        remainingAttempts = 10;
+        gameOver = false;
+        hasWon = false;
+    }
+
+    private void GuessLetter(char letter)
+    {
+        if (!guessedLetters.Contains(letter))
+        {
+            guessedLetters.Add(letter);
+
+            if (currentWord.Contains(letter))
+            {
+                for (int i = 0; i < currentWord.Length; i++)
+                {
+                    if (currentWord[i] == letter)
+                    {
+                        currentWordMasked[i] = letter;
+                    }
+                }
+
+                if (!currentWordMasked.Contains('_'))
+                {
+                    gameOver = true;
+                    hasWon = true;
+                }
+            }
+            else
+            {
+                remainingAttempts--;
+
+                if (remainingAttempts <= 0)
+                {
+                    gameOver = true;
+                    hasWon = false;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,95 @@
+﻿@page "/misterynumber"
+
+<h3 class="mb-3">Nombre Mystère</h3>
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Entrez un nombre" @bind="userInput" @bind:event="oninput"
+           @onkeyup="OnEnterPress" disabled="@gameOver" />
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="VerifyNumber" disabled="@gameOver">Vérifier</button>
+    </div>
+</div>
+
+@if (message != null)
+{
+    <div class="alert @alertClass" role="alert">
+        @message
+    </div>
+}
+
+<p>Essais restants : <span class="badge bg-secondary">@remainingAttempts</span></p>
+
+@if (gameOver)
+{
+    <button class="btn btn-primary" @onclick="StartGame">Rejouer</button>
+}
+
+@code {
+    private int randomNumber;
+    private string userInput = "";
+    private string message;
+    private string alertClass = "alert-info";
+    private int remainingAttempts = 5;
+    private bool gameOver = false;
+
+    protected override void OnInitialized()
+    {
+        StartGame();
+    }
+
+    private void StartGame()
+    {
+        var random = new Random();
+        randomNumber = random.Next(1, 21);
+        remainingAttempts = 5;
+        gameOver = false;
+        message = null;
+        userInput = "";
+        alertClass = "alert-info";
+    }
+
+    private void VerifyNumber()
+    {
+        if (!gameOver && remainingAttempts > 0)
+        {
+            if (int.TryParse(userInput, out int userNumber))
+            {
+                remainingAttempts--;
+
+                if (userNumber == randomNumber)
+                {
+                    message = "Gagné! 😁";
+                    alertClass = "alert-success";
+                    gameOver = true;
+                }
+                else
+                {
+                    message = userNumber > randomNumber ? "Moins! 👇" : "Plus! 👆";
+                    alertClass = "alert-warning";
+
+                    if (remainingAttempts == 0)
+                    {
+                        message = " Vous avez épuisé tous vos essais 😒. Le nombre était " + randomNumber + ".";
+                        alertClass = "alert-danger";
+                        gameOver = true;
+                    }
+                }
+            }
+            else
+            {
+                message = "Veuillez entrer un nombre valide. 😖";
+                alertClass = "alert-danger";
+            }
+        }
+        userInput = "";
+    }
+
+    private Task OnEnterPress(KeyboardEventArgs e)
+    {
+        if (!gameOver && e.Code == "Enter" || e.Key == "Enter")
+        {
+            VerifyNumber();
+        }
+        return Task.CompletedTask;
+    }
+}
