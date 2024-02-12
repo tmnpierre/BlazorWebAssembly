@@ -21,18 +21,15 @@
                 </button>
             }
         </p>
+        <form @onsubmit="SubmitLetter">
+            <input type="text" value="@inputValue" @oninput="HandleLetterInput" maxlength="1" class="form-control mb-3" placeholder="Entrez une lettre" />
+            <button type="submit" class="btn btn-primary">Soumettre</button>
+        </form>
     </div>
 }
 else
 {
-    if (hasWon)
-    {
-        <p class="text-success">Félicitations! Vous avez gagné! 😁</p>
-    }
-    else
-    {
-        <p class="text-danger">Vous avez perdu! 😒 Le mot était "@currentWord".</p>
-    }
+    <p class="@GetGameOverMessageClass()">@(GetGameOverMessage())</p>
     <button class="btn btn-primary" @onclick="StartGame">Recommencer</button>
 }
 
@@ -45,6 +42,7 @@ else
     private readonly char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
     private int remainingAttempts = 10;
     private bool hasWon = false;
+    private string inputValue = "";
 
     protected override void OnInitialized()
     {
@@ -60,6 +58,7 @@ else
         remainingAttempts = 10;
         gameOver = false;
         hasWon = false;
+        inputValue = "";
     }
 
     private void GuessLetter(char letter)
@@ -95,5 +94,37 @@ else
                 }
             }
         }
+    }
+
+    private void HandleLetterInput(ChangeEventArgs e)
+    {
+        inputValue = e.Value.ToString().ToUpper();
+    }
+
+    private Task SubmitLetter()
+    {
+        if (!string.IsNullOrWhiteSpace(inputValue) && inputValue.Length == 1 && alphabet.Contains(inputValue[0]) && !guessedLetters.Contains(inputValue[0]))
+        {
+            GuessLetter(inputValue[0]);
+        }
+        inputValue = "";
+        return Task.CompletedTask;
+    }
+
+    private string GetGameOverMessage()
+    {
+        if (hasWon)
+        {
+            return $"Félicitations! Vous avez gagné! 😁 Le mot était \"{currentWord}\".";
+        }
+        else
+        {
+            return $"Vous avez perdu! 😒 Le mot était \"{currentWord}\".";
+        }
+    }
+
+    private string GetGameOverMessageClass()
+    {
+        return hasWon ? "text-success" : "text-danger";
     }
 }
