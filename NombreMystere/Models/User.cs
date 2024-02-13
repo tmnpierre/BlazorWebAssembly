@@ -49,5 +49,5 @@ namespace NombreMystere.Models
         public FavColor? FavoriteColor { get; set; }
     }
 
-    public enum FavColor { Rouge, Vert, Bleu, Jaune, Violet }
+    public enum FavColor { Rouge, Vert, Bleu, Jaune, Violet, Orange }
 }
