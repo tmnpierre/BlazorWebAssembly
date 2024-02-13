@@ -1,0 +1,117 @@
+﻿@page "/form"
+
+<h3>Formulaire</h3>
+
+<EditForm Model="@userModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="firstName">Prénom:</label>
+        <InputText id="firstName" class="form-control" @bind-Value="userModel.FirstName" />
+        <ValidationMessage For="@(() => userModel.FirstName)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="lastName">Nom de famille:</label>
+        <InputText id="lastName" class="form-control" @bind-Value="userModel.LastName" />
+        <ValidationMessage For="@(() => userModel.LastName)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" type="email" class="form-control" @bind-Value="userModel.Email" />
+        <ValidationMessage For="@(() => userModel.Email)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="address">Adresse postale:</label>
+        <InputText id="address" class="form-control" @bind-Value="userModel.Address" />
+        <ValidationMessage For="@(() => userModel.Address)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="zip">Code Postal:</label>
+        <InputNumber id="zip" class="form-control" @bind-Value="userModel.Zip" />
+        <ValidationMessage For="@(() => userModel.Zip)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="age">Âge:</label>
+        <InputNumber id="age" class="form-control" @bind-Value="userModel.Age" />
+        <ValidationMessage For="@(() => userModel.Age)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="birthdate">Date de naissance:</label>
+        <InputDate id="birthdate" class="form-control" @bind-Value="userModel.BirthDate" />
+        <ValidationMessage For="@(() => userModel.BirthDate)" />
+    </div>
+    <br />
+    <div class="form-group form-switch">
+        <InputCheckbox id="married" class="form-check-input" @bind-Value="userModel.IsMarried" />
+        <label class="form-check-label" for="married">Marié(e)?</label>
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="favoriteColor">Couleur favorite :</label>
+        <InputSelect id="favoriteColor" class="form-control" @bind-Value="userModel.FavoriteColor">
+            <option value="">Sélectionner une couleur...</option>
+            @foreach (var color in Enum.GetValues<FavColor>())
+            {
+                <option value="@color">@color</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => userModel.FavoriteColor)" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Validation</button>
+</EditForm>
+
+@if (showConfirmationModal)
+{
+    <!-- Modal -->
+    <div class="modal" tabindex="-1" style="display:block;" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Fiche Contact</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseModal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Prénom: @userModel.FirstName</p>
+                    <p>Nom de famille: @userModel.LastName</p>
+                    <p>Email: @userModel.Email</p>
+                    <p>Adresse postale: @userModel.Address</p>
+                    <p>Code Postal: @userModel.Zip</p>
+                    <p>Âge: @userModel.Age</p>
+                    <p>Date de naissance: @userModel.BirthDate?.ToString("dd-MM-yyyy")</p>
+                    <p>Marié(e): @(userModel.IsMarried ? "Oui" : "Non")</p>
+                    <p>Couleur favorite: @userModel.FavoriteColor</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private User userModel = new User();
+    private bool showConfirmationModal = false;
+
+    private void HandleValidSubmit()
+    {
+        showConfirmationModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showConfirmationModal = false;
+    }
+}
