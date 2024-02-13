@@ -111,16 +111,23 @@ else
         return Task.CompletedTask;
     }
 
-    private string GetGameOverMessage()
+    private MarkupString GetGameOverMessage()
     {
+        string message;
+        string gifUrl;
+
         if (hasWon)
         {
-            return $"Félicitations! Vous avez gagné! 😁 Le mot était \"{currentWord}\".";
+            message = $"Félicitations! Vous avez gagné! 😁 Le mot était \"{currentWord}\".";
+            gifUrl = "https://media1.tenor.com/m/WWjSpBaJnkAAAAAd/koh-lanta-denis.gif";
         }
         else
         {
-            return $"Vous avez perdu! 😒 Le mot était \"{currentWord}\".";
+            message = $"Vous avez perdu! 😒 Le mot était \"{currentWord}\".";
+            gifUrl = "https://media1.tenor.com/m/dvnQzSrXuGQAAAAC/sam-koh-lanta.gif";
         }
+
+        return new MarkupString($"{message} <img src='{gifUrl}' alt='Résultat du jeu' />");
     }
 
     private string GetGameOverMessageClass()
